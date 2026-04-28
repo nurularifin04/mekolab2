@@ -1,0 +1,414 @@
+/*
+ * Material Symbols (Google Fonts)
+ * Licensed under the Apache License, Version 2.0.
+ *
+ * For full license text, visit:
+ * https://github.com/google/material-design-icons/blob/master/LICENSE
+ */
+ 
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  src: url('../assets/font/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Baloo 2';
+  src: url('../assets/font/Baloo2-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+:root {
+  --lab-lime: #32cd32; /* LimeGreen */ /*rgb(50, 205, 50);*/
+  --lab-one: #123456; /*rgb(18, 52, 86);*/
+  --lab-purple: #8e80bf;
+  --lab-blue: #58b6d7;
+  --lab-green: #3ecf7a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  scroll-behavior: smooth;
+}
+
+html {
+  font-size: 6.25%;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  font-family: 'Baloo 2', 'Ubuntu', sans-serif;
+  font-size: 16rem;
+  color: var(--lab-one);
+  background-color: var(--lab-purple);
+  background-image: 
+    linear-gradient(90deg, rgba(0, 0, 0, 0.1) 50%, transparent 50%);
+
+  width: 100%;
+  height: 100%;
+}
+
+a:link, a:visited {
+  color: inherit;
+}
+
+a, button, canvas {
+  user-select: none !important;
+  appearance: none !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.hidden, input[type="file"] {
+  display: none !important;
+}
+
+/* MAIN PAGE */
+.main-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  padding: 25rem 25rem 200rem;
+  gap: 40rem;
+  background-color: var(--lab-purple);
+  background-image: 
+    linear-gradient(90deg, rgba(0, 0, 0, 0.1) 50%, transparent 50%);
+
+  width: 100%;
+  height: 100dvh;
+  overflow: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.main-page header {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
+  align-items: baseline;
+  gap: 25rem;
+  width: 100%;
+}
+
+.main-page header h1 {
+  text-align: right;
+  color: #fff;
+}
+
+.main-page main {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 20rem 40rem;
+}
+
+.card {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  object-fit: contain;
+  border-radius: 6rem;
+}
+
+.card.active {
+  box-shadow: 0 0 6rem 2rem #fff;
+  background-color: #fff;
+}
+
+.main-page footer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
+  align-items: center;
+  gap: 20rem 40rem;
+  width: 100%;
+}
+
+.main-page footer p {
+  text-align: right;
+  font-weight: bold;
+  color: #234567;
+}
+
+.main-page footer button {
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 24rem;
+  font-variation-settings:
+    'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: var(--lab-one);
+  border: 2rem solid #fff;
+  border-radius: 6rem;
+  padding: 5rem;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.main-page footer button:active {
+  background-color: rgba(0, 0, 0, 0.25);
+  border: 2rem solid #234567;
+}
+
+.main-toolbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: fixed;
+  bottom: -100rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  padding: 10rem 0;
+  z-index: 1000;
+  transition: 0.2s ease;
+}
+
+.main-toolbar.open {
+  bottom: 0;
+}
+
+.main-toolbar button {
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 30rem;
+  font-variation-settings:
+    'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 30;
+  background-color: transparent;
+  color: #555;
+}
+
+.main-toolbar button:active {
+  color: var(--lab-blue);
+}
+
+.main-toolbar button:disabled,
+.edit-page button:disabled {
+  color: #ccc;
+}
+
+.main-toolbar button:nth-child(2) {
+  font-variation-settings:
+    'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 30;
+}
+
+.main-toolbar button:nth-child(4) {
+  font-variation-settings:
+    'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 30;
+}
+
+/* EDITOR PAGE */
+.edit-page {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  grid-template-columns: 100%;
+  grid-template-areas: 'topbar' 'content' 'bottombar';
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.edit-topbar, #layer-tools {
+  grid-area: topbar;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 5rem 20rem;
+  background-color: white;
+}
+
+.edit-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+#layer-wrapper {
+  display: flex;
+  flex-direction: row;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background-color: transparent;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+}
+
+#layer-wrapper canvas {
+  width: 100%;
+  object-fit: contain;
+  position: sticky;
+  left: 0;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+.edit-bottombar {
+  grid-area: bottombar;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: auto;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(92, 88, 22, 0.5);
+  width: 100%;
+  height: 70rem;
+  padding: 10rem 20rem;
+  gap: 20rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.edit-bottombar div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.edit-bottombar canvas {
+  width: 100%;
+  object-fit: contain;
+}
+
+.edit-page button {
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 30rem;
+  font-variation-settings:
+    'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 30;
+  background-color: transparent;
+  color: #555;
+  
+}
+
+
+
+/*---*/
+.text-area {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
+/* DIALOG */
+.ml2-modal {
+  margin: auto;
+  background-color: transparent;
+  overflow: visible;
+}
+
+.ml2-modal[open] {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ml2-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  width: 85vw;
+  overflow: hidden;
+  border-radius: 20rem;
+  background-color: white;
+  animation: ml2-modal-show 0.35s ease-out;
+}
+
+.modal-text {
+  font-family: 'Baloo 2', 'Ubuntu', sans-serif;
+  text-align: center;
+  padding: 45rem 20rem 35rem 20rem;
+  color: grey;
+}
+
+.modal-footer {
+  display: flex;
+  grid-template-columns: repeat(2, 1fr);
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.modal-footer button {
+  font-family: 'Baloo 2', 'Ubuntu', sans-serif;
+  font-size: 16rem;
+  justify-content: center;
+  align-items: center;
+  padding: 10rem 20rem;
+  background-color: white;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  color: var(--lab-blue);
+  width: 100%;
+}
+
+
+.ml2-modal canvas {
+  /*animation: load 1.2s linear infinite alternate;*/
+}
+
+/* KEYFRAMES ANIMATION */
+@keyframes ml2-modal-show {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.12); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes load {
+  0% { translate: -50vw 0 }
+  100% { translate: 50vw 0 }
+}
+
+/* MEDIA */
+@media screen and (min-width: 480px) {
+  .main-page {
+    padding-left: calc((100% - (100% * 9 / 16)) / 2 + 25rem);
+    padding-right: calc((100% - (100% * 9 / 16)) / 2 + 25rem);
+  }
+  
+  .edit-page {
+    flex-direction: row;
+  }
+  
+  .edit-page header div {
+    flex-direction: column;
+  }
+  
+  .modal-wrapper {
+    width: 50vw;
+  }
+  
+}
+
+.render {
+  image-rendering: pixelated;
+}
+
