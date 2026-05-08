@@ -1,111 +1,41 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube App</title>
-    
-    <!-- Manifest dengan Data URI agar tidak perlu file terpisah -->
-    <link rel="manifest" id="my-manifest">
-
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f1f1f1;
-            text-align: center;
-        }
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        button {
-            background-color: #ff0000;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-            display: none; /* Muncul lewat JS */
-        }
-        #status { color: #666; margin-top: 15px; font-size: 14px; }
-    </style>
+    <title>YouTube PWA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="manifest.json">
 </head>
-<body>
+<body style="text-align:center; padding-top:50px; font-family:sans-serif;">
+    <h2>YouTube PWA Wrapper</h2>
+    <p id="msg">Menunggu respon browser...</p>
+    <button id="btn" style="display:none; padding:15px; background:red; color:white; border:none; border-radius:8px;">INSTAL SEKARANG</button>
 
-<div class="card">
-    <img src="https://www.youtube.com/s/desktop/282367d3/img/favicon_144.png" width="72" height="72" alt="Logo">
-    <h2>YouTube PWA</h2>
-    <p id="status">Mengecek kompatibilitas...</p>
-    <button id="btnInstall">PASANG APLIKASI</button>
-</div>
-
-<script>
-    // 1. Generate Manifest secara dinamis
-    const myDynamicManifest = {
-        "name": "YouTube Lite",
-        "short_name": "YouTube",
-        "start_url": "https://m.youtube.com",
-        "display": "standalone",
-        "background_color": "#ffffff",
-        "theme_color": "#ff0000",
-        "icons": [{
-            "src": "https://www.youtube.com/s/desktop/282367d3/img/favicon_144.png",
-            "sizes": "144x144",
-            "type": "image/png",
-            "purpose": "any maskable"
-        }]
-    };
-    const stringManifest = JSON.stringify(myDynamicManifest);
-    const blobManifest = new Blob([stringManifest], {type: 'application/json'});
-    document.getElementById('my-manifest').setAttribute('href', URL.createObjectURL(blobManifest));
-
-    // 2. Registrasi Service Worker (Wajib untuk PWA)
-    if ('serviceWorker' in navigator) {
-        const swCode = `self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request)); });`;
-        const blobSW = new Blob([swCode], {type: 'text/javascript'});
-        navigator.serviceWorker.register(URL.createObjectURL(blobSW));
-    }
-
-    // 3. Menangkap event instalasi
-    let deferredPrompt;
-    const btnInstall = document.getElementById('btnInstall');
-    const statusText = document.getElementById('status');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Simpan event agar bisa dipicu nanti
-        e.preventDefault();
-        deferredPrompt = e;
-        // Tampilkan tombol
-        btnInstall.style.display = 'block';
-        statusText.innerText = 'Siap dipasang!';
-    });
-
-    btnInstall.addEventListener('click', async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                btnInstall.style.display = 'none';
-            }
-            deferredPrompt = null;
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log("SW Registered"));
         }
-    });
 
-    // Cek jika sudah terinstall
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-        window.location.replace("https://m.youtube.com");
-    }
-</script>
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('btn').style.display = 'block';
+            document.getElementById('msg').innerText = 'Klik tombol di bawah:';
+        });
+
+        document.getElementById('btn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt = null;
+            }
+        });
+
+        // Jika dibuka dari layar utama, langsung ke YT
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            window.location.href = "https://m.youtube.com";
+        }
+    </script>
 </body>
 </html>
