@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Web App</title>
+    
+    <!-- Manifest dinamis menggunakan Data URI -->
+    <link rel="manifest" href='data:application/json,{"name":"YouTube PWA","short_name":"YouTube","start_url":"https://m.youtube.com","display":"standalone","background_color":"#ffffff","theme_color":"#FF0000","icons":[{"src":"https://www.youtube.com/s/desktop/282367d3/img/favicon_144.png","sizes":"144x144","type":"image/png"}]}'>
+    
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f9f9f9;
+        }
+        .loader {
+            text-align: center;
+        }
+        .btn-install {
+            padding: 12px 24px;
+            background: #FF0000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none; /* Muncul jika bisa diinstal */
+        }
+    </style>
+</head>
+<body>
+
+<div class="loader">
+    <h2>YouTube PWA Wrapper</h2>
+    <p id="status">Menyiapkan aplikasi...</p>
+    <button id="installBtn" class="btn-install">Instal YouTube Lite</button>
+</div>
+
+<script>
+    // 1. Membuat Service Worker "Inline" menggunakan Blob
+    const swCode = `
+        self.addEventListener('fetch', function(event) {
+            // Service worker aktif untuk memenuhi syarat PWA
+        });
+    `;
+    
+    const blob = new Blob([swCode], { type: 'text/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(swUrl).then(() => {
+            console.log("Service Worker Registered");
+        });
+    }
+
+    // 2. Logika Tombol Instalasi
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    const statusText = document.getElementById('status');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Mencegah Chrome memunculkan banner otomatis
+        e.preventDefault();
+        deferredPrompt = e;
+        // Tampilkan tombol instal buatan kita
+        installBtn.style.display = 'block';
+        statusText.innerText = 'Klik tombol di bawah untuk memasang';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('User menginstal PWA');
+            }
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+        }
+    });
+
+    // 3. Otomatis redirect jika sudah dalam mode PWA (standalone)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        window.location.replace("https://m.youtube.com");
+    } else {
+        // Jika dibuka di browser biasa, beri pesan
+        setTimeout(() => {
+            if (!deferredPrompt) {
+                statusText.innerHTML = 'Buka menu Chrome (titik tiga) <br> lalu pilih <b>"Instal Aplikasi"</b> atau <b>"Tambahkan ke Layar Utama"</b>';
+            }
+        }, 2000);
+    }
+</script>
+
+</body>
+</html>
