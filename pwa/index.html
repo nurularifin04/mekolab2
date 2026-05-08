@@ -3,98 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Web App</title>
+    <title>YouTube App</title>
     
-    <!-- Manifest dinamis menggunakan Data URI -->
-    <link rel="manifest" href='data:application/json,{"name":"YouTube PWA","short_name":"YouTube","start_url":"https://m.youtube.com","display":"standalone","background_color":"#ffffff","theme_color":"#FF0000","icons":[{"src":"https://www.youtube.com/s/desktop/282367d3/img/favicon_144.png","sizes":"144x144","type":"image/png"}]}'>
-    
+    <!-- Manifest dengan Data URI agar tidak perlu file terpisah -->
+    <link rel="manifest" id="my-manifest">
+
     <style>
         body {
-            font-family: sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background: #f9f9f9;
-        }
-        .loader {
+            background-color: #f1f1f1;
             text-align: center;
         }
-        .btn-install {
-            padding: 12px 24px;
-            background: #FF0000;
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #ff0000;
             color: white;
             border: none;
-            border-radius: 8px;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
             font-weight: bold;
-            display: none; /* Muncul jika bisa diinstal */
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+            display: none; /* Muncul lewat JS */
         }
+        #status { color: #666; margin-top: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<div class="loader">
-    <h2>YouTube PWA Wrapper</h2>
-    <p id="status">Menyiapkan aplikasi...</p>
-    <button id="installBtn" class="btn-install">Instal YouTube Lite</button>
+<div class="card">
+    <img src="https://www.youtube.com/s/desktop/282367d3/img/favicon_144.png" width="72" height="72" alt="Logo">
+    <h2>YouTube PWA</h2>
+    <p id="status">Mengecek kompatibilitas...</p>
+    <button id="btnInstall">PASANG APLIKASI</button>
 </div>
 
 <script>
-    // 1. Membuat Service Worker "Inline" menggunakan Blob
-    const swCode = `
-        self.addEventListener('fetch', function(event) {
-            // Service worker aktif untuk memenuhi syarat PWA
-        });
-    `;
-    
-    const blob = new Blob([swCode], { type: 'text/javascript' });
-    const swUrl = URL.createObjectURL(blob);
+    // 1. Generate Manifest secara dinamis
+    const myDynamicManifest = {
+        "name": "YouTube Lite",
+        "short_name": "YouTube",
+        "start_url": "https://m.youtube.com",
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": "#ff0000",
+        "icons": [{
+            "src": "https://www.youtube.com/s/desktop/282367d3/img/favicon_144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }]
+    };
+    const stringManifest = JSON.stringify(myDynamicManifest);
+    const blobManifest = new Blob([stringManifest], {type: 'application/json'});
+    document.getElementById('my-manifest').setAttribute('href', URL.createObjectURL(blobManifest));
 
+    // 2. Registrasi Service Worker (Wajib untuk PWA)
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(swUrl).then(() => {
-            console.log("Service Worker Registered");
-        });
+        const swCode = `self.addEventListener('fetch', (e) => { e.respondWith(fetch(e.request)); });`;
+        const blobSW = new Blob([swCode], {type: 'text/javascript'});
+        navigator.serviceWorker.register(URL.createObjectURL(blobSW));
     }
 
-    // 2. Logika Tombol Instalasi
+    // 3. Menangkap event instalasi
     let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
+    const btnInstall = document.getElementById('btnInstall');
     const statusText = document.getElementById('status');
 
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Mencegah Chrome memunculkan banner otomatis
+        // Simpan event agar bisa dipicu nanti
         e.preventDefault();
         deferredPrompt = e;
-        // Tampilkan tombol instal buatan kita
-        installBtn.style.display = 'block';
-        statusText.innerText = 'Klik tombol di bawah untuk memasang';
+        // Tampilkan tombol
+        btnInstall.style.display = 'block';
+        statusText.innerText = 'Siap dipasang!';
     });
 
-    installBtn.addEventListener('click', async () => {
+    btnInstall.addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             if (outcome === 'accepted') {
-                console.log('User menginstal PWA');
+                btnInstall.style.display = 'none';
             }
             deferredPrompt = null;
-            installBtn.style.display = 'none';
         }
     });
 
-    // 3. Otomatis redirect jika sudah dalam mode PWA (standalone)
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    // Cek jika sudah terinstall
+    if (window.matchMedia('(display-mode: standalone)').matches) {
         window.location.replace("https://m.youtube.com");
-    } else {
-        // Jika dibuka di browser biasa, beri pesan
-        setTimeout(() => {
-            if (!deferredPrompt) {
-                statusText.innerHTML = 'Buka menu Chrome (titik tiga) <br> lalu pilih <b>"Instal Aplikasi"</b> atau <b>"Tambahkan ke Layar Utama"</b>';
-            }
-        }, 2000);
     }
 </script>
-
 </body>
 </html>
